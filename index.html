@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050912">
+<title>СО · Физика 10 класс · Статика и гидростатика</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ БАЗА ============ */
+:root{
+  --bg:#050912; --panel:rgba(10,17,32,.88); --line:rgba(86,126,190,.30);
+  --cy:#38e1ff; --mg:#ff3fd4; --am:#ffc14d; --rd:#ff4d6d; --gn:#4dffa0;
+  --tx:#dbe7ff; --mut:#8296bd;
+  --fd:'Russo One',system-ui,sans-serif; --fb:'Rubik',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh; font-family:var(--fb); color:var(--tx); -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(900px 520px at 88% -10%, rgba(56,225,255,.10), transparent 60%),
+    radial-gradient(760px 460px at -12% 112%, rgba(255,63,212,.09), transparent 60%),
+    var(--bg);
+  overflow-x:hidden;
+}
+body::before{ /* миллиметровка */
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(96,160,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,160,255,.06) 1px, transparent 1px);
+  background-size:34px 34px;
+  animation:gridMove 42s linear infinite;
+}
+@keyframes gridMove{to{background-position:34px 34px}}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;animation:orbFloat 12s ease-in-out infinite}
+.o1{width:10px;height:10px;background:rgba(56,225,255,.55);top:18%;left:7%}
+.o2{width:6px;height:6px;background:rgba(255,63,212,.5);top:66%;left:11%;animation-duration:15s;animation-delay:-4s}
+.o3{width:8px;height:8px;background:rgba(255,193,77,.45);top:24%;right:9%;animation-duration:13s;animation-delay:-6s}
+.o4{width:5px;height:5px;background:rgba(56,225,255,.5);bottom:16%;right:14%;animation-duration:17s;animation-delay:-2s}
+.o5{width:9px;height:9px;background:rgba(255,63,212,.35);bottom:32%;left:28%;animation-duration:16s;animation-delay:-8s}
+@keyframes orbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-28px)}}
+main{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:26px 16px calc(30px + env(safe-area-inset-bottom))}
+.screen{display:none}
+.screen.active{display:block;animation:fadeUp .45s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.panel{
+  background:var(--panel); border:1px solid var(--line); border-radius:16px;
+  box-shadow:0 10px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(56,225,255,.04), 0 0 34px rgba(56,225,255,.05);
+  backdrop-filter:blur(6px);
+}
+h1{font-family:var(--fd);font-size:clamp(26px,5vw,44px);line-height:1.12;letter-spacing:.5px;
+   text-shadow:0 0 14px rgba(56,225,255,.55),0 0 44px rgba(56,225,255,.22)}
+h2{font-family:var(--fd);font-size:clamp(18px,3vw,23px);letter-spacing:.4px;color:#eaffff;
+   text-shadow:0 0 10px rgba(56,225,255,.4)}
+.sub{color:var(--cy);font-weight:600;margin-top:8px;font-size:clamp(14px,2.6vw,17px)}
+/* ============ СТАРТ ============ */
+.start-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{font-family:var(--fd);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
+  padding:6px 12px;border-radius:999px;border:1px solid rgba(56,225,255,.4);color:var(--cy);
+  box-shadow:0 0 10px rgba(56,225,255,.18), inset 0 0 8px rgba(56,225,255,.08)}
+.chip.m{border-color:rgba(255,63,212,.45);color:#ff8de6;box-shadow:0 0 10px rgba(255,63,212,.18)}
+.topics{list-style:none;margin:18px 0 20px;display:grid;gap:9px}
+.topics li{padding:9px 12px 9px 34px;position:relative;border:1px solid rgba(86,126,190,.22);
+  border-radius:10px;background:rgba(12,21,40,.55);font-size:14px;color:#c3d3f2}
+.topics li::before{content:'';position:absolute;left:13px;top:15px;width:9px;height:9px;border-radius:2px;
+  background:var(--cy);box-shadow:0 0 9px var(--cy);transform:rotate(45deg)}
+.topics li:nth-child(2)::before{background:var(--mg);box-shadow:0 0 9px var(--mg)}
+.topics li:nth-child(3)::before{background:var(--am);box-shadow:0 0 9px var(--am)}
+.topics li:nth-child(4)::before{background:var(--gn);box-shadow:0 0 9px var(--gn)}
+.teacher{border-left:3px solid var(--cy);padding:12px 16px;border-radius:0 12px 12px 0;
+  background:linear-gradient(90deg,rgba(56,225,255,.10),transparent);display:grid;gap:3px}
+.t-label{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--mut)}
+.t-name{font-family:var(--fd);font-size:clamp(15px,2.6vw,19px);color:#eaffff;text-shadow:0 0 12px rgba(56,225,255,.35)}
+.form-panel{padding:24px 22px}
+.form-panel h2{margin-bottom:18px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field>span{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+.field input,.field select{
+  width:100%;font:500 16px var(--fb);color:var(--tx);background:#0a1526;
+  border:1px solid rgba(86,126,190,.4);border-radius:10px;padding:12px 14px;outline:none;
+  transition:border-color .25s, box-shadow .25s;appearance:none;-webkit-appearance:none;
+}
+.field input:focus,.field select:focus{border-color:var(--cy);box-shadow:0 0 0 1px var(--cy),0 0 16px rgba(56,225,255,.35)}
+.sel{position:relative}
+.sel::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--cy);pointer-events:none}
+.mini-stats{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 18px}
+.mini-stats span{font-size:12px;color:var(--mut);border:1px dashed rgba(86,126,190,.4);padding:5px 10px;border-radius:8px}
+.btn{
+  font-family:var(--fd);font-size:15px;letter-spacing:.6px;cursor:pointer;border-radius:11px;
+  padding:14px 22px;border:1px solid var(--cy);color:#dffaff;touch-action:manipulation;
+  background:linear-gradient(135deg,#0d3550,#123a63);
+  box-shadow:0 0 14px rgba(56,225,255,.30), inset 0 0 10px rgba(56,225,255,.10);
+  transition:box-shadow .3s, transform .15s, opacity .3s, filter .3s;
+}
+.btn:hover{box-shadow:0 0 26px rgba(56,225,255,.55), inset 0 0 14px rgba(56,225,255,.16)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.32;filter:saturate(.35);box-shadow:none;cursor:not-allowed}
+.btn.wide{width:100%}
+/* ============ ДИСКЛЕЙМЕР ============ */
+.disc{max-width:720px;margin:0 auto;padding:26px 24px}
+.disc h2{margin-bottom:12px;color:var(--am);text-shadow:0 0 12px rgba(255,193,77,.45)}
+.disc .who{color:var(--cy);font-weight:600;margin-bottom:14px}
+.disc ul{list-style:none;display:grid;gap:9px;margin-bottom:18px}
+.disc ul li{padding-left:26px;position:relative;font-size:14.5px;line-height:1.5;color:#c3d3f2}
+.disc ul li::before{content:'◆';position:absolute;left:4px;color:var(--cy);text-shadow:0 0 8px var(--cy)}
+.agree{display:flex;gap:11px;align-items:flex-start;padding:13px;border:1px solid var(--line);border-radius:11px;
+  background:rgba(12,21,40,.6);cursor:pointer;font-size:14px;margin-bottom:12px}
+.agree input{width:20px;height:20px;accent-color:var(--cy);flex:none;margin-top:1px;cursor:pointer}
+.attempt-note{font-size:13px;color:var(--mut);margin-bottom:16px}
+.attempt-note b{color:var(--mg);text-shadow:0 0 8px rgba(255,63,212,.6)}
+/* ============ ТЕСТ ============ */
+.quiz{max-width:780px;margin:0 auto;padding:20px 20px 22px}
+.q-head{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.q-count{font-family:var(--fd);font-size:17px;color:#eaffff;text-shadow:0 0 10px rgba(56,225,255,.4)}
+.q-topic{font-size:12px;color:var(--mut);letter-spacing:.6px;margin-top:3px}
+.tring{width:60px;height:60px;flex:none}
+.tr-bg{fill:none;stroke:rgba(96,160,255,.18);stroke-width:5}
+.tr-fg{fill:none;stroke:var(--cy);stroke-width:5;stroke-linecap:round;stroke-dasharray:163.36;
+  transition:stroke-dashoffset 1s linear, stroke .4s;filter:drop-shadow(0 0 4px rgba(56,225,255,.8))}
+.tring text{font:700 15px var(--fd);fill:#dffaff;text-anchor:middle}
+.tring.low .tr-fg{stroke:var(--rd);filter:drop-shadow(0 0 7px rgba(255,77,109,.9))}
+.tring.low text{fill:#ffb3c1;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.prog{display:flex;gap:4px;margin:14px 0 6px}
+.prog i{flex:1;height:5px;border-radius:3px;background:rgba(96,160,255,.14);transition:.35s}
+.prog i.done{background:var(--cy);box-shadow:0 0 8px rgba(56,225,255,.7)}
+.prog i.cur{background:var(--mg);box-shadow:0 0 8px rgba(255,63,212,.7)}
+.q-text{font-size:clamp(16px,3vw,18.5px);font-weight:600;line-height:1.55;margin:16px 0 6px;color:#eef5ff}
+.fig{margin:12px auto 14px;max-width:400px}
+.fig svg,.opt-wrap svg{display:block;width:100%;height:auto;border-radius:9px;border:1px solid rgba(86,126,190,.25)}
+.opts{display:grid;gap:10px;margin:14px 0 18px}
+.opts-svg{grid-template-columns:1fr 1fr}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;
+  background:rgba(13,24,44,.72);border:1px solid var(--line);border-radius:11px;color:var(--tx);
+  font:500 15px/1.45 var(--fb);cursor:pointer;touch-action:manipulation;
+  transition:transform .15s, box-shadow .3s, border-color .3s, background .3s;
+}
+.opt:hover{border-color:rgba(56,225,255,.75);box-shadow:0 0 14px rgba(56,225,255,.22);transform:translateY(-1px)}
+.opt .key{flex:0 0 30px;height:30px;display:grid;place-items:center;border:1px solid rgba(86,126,190,.5);
+  border-radius:8px;font-family:var(--fd);font-size:13px;color:var(--mut);transition:.3s}
+.opt.formula .txt{font-size:19px;font-weight:600;letter-spacing:.4px}
+.opt.sel{border-color:var(--cy);background:rgba(24,48,84,.95);color:#eaffff;
+  box-shadow:0 0 12px rgba(56,225,255,.65), inset 0 0 18px rgba(56,225,255,.16)}
+.opt.sel .key{border-color:var(--cy);color:var(--cy);box-shadow:0 0 10px rgba(56,225,255,.6)}
+.opt-wrap{flex-direction:column;align-items:stretch;gap:8px;padding:10px}
+.opt-wrap .key{align-self:flex-start;width:26px;height:26px;font-size:12px}
+.opt-wrap.sel svg{border-color:var(--cy);box-shadow:0 0 12px rgba(56,225,255,.4)}
+.calc-zone{margin:16px 0 18px;display:grid;gap:8px}
+.calc-zone input{
+  width:100%;font:600 22px var(--fb);text-align:center;letter-spacing:1px;color:#eaffff;
+  background:#0a1526;border:1px solid rgba(86,126,190,.45);border-radius:12px;padding:15px;outline:none;
+  transition:border-color .25s, box-shadow .25s;
+}
+.calc-zone input:focus{border-color:var(--cy);box-shadow:0 0 0 1px var(--cy),0 0 20px rgba(56,225,255,.4)}
+.calc-zone input.invalid{border-color:var(--rd);box-shadow:0 0 0 1px var(--rd),0 0 16px rgba(255,77,109,.4)}
+.calc-note{font-size:12.5px;color:var(--mut)}
+.btn-next.ready{animation:pulseN 1.7s ease-in-out infinite}
+@keyframes pulseN{0%,100%{box-shadow:0 0 12px rgba(56,225,255,.5), inset 0 0 10px rgba(56,225,255,.12)}
+  50%{box-shadow:0 0 30px rgba(56,225,255,.95), inset 0 0 16px rgba(56,225,255,.2)}}
+/* SVG-подписи */
+.qsvg .tx{font:10px var(--fb);fill:#93a9d6}
+.qsvg .ax{font:italic 11px var(--fb);fill:#c6d6f7}
+.qsvg .px{font:700 13px var(--fb);fill:#ff7de2}
+/* ============ ПРЕДУПРЕЖДЕНИЕ ============ */
+.warn{position:fixed;inset:0;z-index:60;background:rgba(4,7,14,.93);display:none;place-items:center;padding:18px}
+.warn.show{display:grid;animation:fadeUp .3s ease both}
+.warn[hidden]{display:none!important} /* двойная страховка */
+.warn-card{max-width:430px;width:100%;text-align:center;padding:30px 24px;border-radius:16px;
+  background:#100a14;border:1px solid var(--rd);box-shadow:0 0 34px rgba(255,77,109,.5), inset 0 0 24px rgba(255,77,109,.08);
+  animation:shake .45s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.warn-ico{font-size:52px;text-shadow:0 0 24px var(--rd);margin-bottom:10px}
+.warn-card h3{font-family:var(--fd);color:#ffb3c1;margin-bottom:10px;text-shadow:0 0 12px rgba(255,77,109,.7)}
+.warn-card p{font-size:14px;line-height:1.5;color:#e7d7de;margin-bottom:8px}
+.warn-sub{font-size:12.5px!important;color:var(--mut)!important}
+.btn-warn{margin-top:12px;border-color:var(--rd);background:linear-gradient(135deg,#3a0f1c,#57152b);
+  box-shadow:0 0 16px rgba(255,77,109,.4)}
+/* ============ РЕЗУЛЬТАТ ============ */
+.res{max-width:560px;margin:0 auto;padding:30px 24px;text-align:center}
+.res h2{margin-bottom:18px}
+.score-badge{width:150px;height:150px;margin:6px auto 14px;border-radius:50%;display:grid;place-items:center;
+  border:2px solid var(--cy);box-shadow:0 0 30px rgba(56,225,255,.5), inset 0 0 26px rgba(56,225,255,.15);
+  background:radial-gradient(circle at 50% 38%, rgba(56,225,255,.12), transparent 70%)}
+.score-badge b{font-family:var(--fd);font-size:56px;color:#eaffff;text-shadow:0 0 18px var(--cy);line-height:1}
+.score-badge span{font-size:13px;color:var(--mut);letter-spacing:1px}
+.score-badge.bad{border-color:var(--rd);box-shadow:0 0 30px rgba(255,77,109,.5), inset 0 0 26px rgba(255,77,109,.15)}
+.score-badge.bad b{text-shadow:0 0 18px var(--rd)}
+.res-status{font-size:14px;margin-bottom:6px;color:#cfe0ff}
+.res-status.viol{color:#ffb3c1;font-weight:700;text-shadow:0 0 10px rgba(255,77,109,.6)}
+.res-rate{font-family:var(--fd);font-size:17px;color:var(--cy);text-shadow:0 0 10px rgba(56,225,255,.5);margin-bottom:18px}
+.res-rows{list-style:none;text-align:left;display:grid;gap:8px;margin-bottom:18px}
+.res-rows li{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border:1px solid var(--line);
+  border-radius:10px;background:rgba(12,21,40,.6);font-size:14.5px}
+.res-rows span{color:var(--mut)}
+.res-rows b{color:#eaffff;text-align:right}
+.send{font-size:12.5px;color:var(--mut);margin-bottom:16px;min-height:16px}
+.send.ok{color:var(--gn);text-shadow:0 0 8px rgba(77,255,160,.5)}
+.send.err{color:#ffb3c1}
+/* ============ ПРОЧЕЕ ============ */
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);
+  background:#0c1a30;border:1px solid var(--am);color:#ffe9c2;padding:11px 20px;border-radius:11px;
+  box-shadow:0 0 20px rgba(255,193,77,.4);opacity:0;pointer-events:none;transition:.35s;z-index:70;font-size:14px;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.foot{text-align:center;color:var(--mut);font-size:12px;letter-spacing:1.2px;margin-top:26px;text-transform:uppercase}
+@media(max-width:860px){.start-grid{grid-template-columns:1fr}}
+@media(max-width:480px){
+  .quiz{padding:16px 14px 18px}
+  .opts-svg{grid-template-columns:1fr 1fr;gap:8px}
+  .opt{padding:11px 12px;font-size:14px}
+  .opt.formula .txt{font-size:16.5px}
+}
+</style>
+</head>
+<body>
+<i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><i class="orb o4"></i><i class="orb o5"></i>
+
+<main>
+  <!-- ЭКРАН 1: СТАРТ -->
+  <section id="scr-start" class="screen active">
+    <div class="start-grid">
+      <div class="start-info">
+        <div class="chips">
+          <span class="chip">Физика · 10 класс</span><span class="chip m">2 варианта</span><span class="chip">15 баллов</span>
+        </div>
+        <h1>Суммативное оценивание за раздел</h1>
+        <p class="sub">«Статика и гидростатика. Законы сохранения. Гидродинамика»</p>
+        <ul class="topics">
+          <li>Центр масс · Виды равновесия <small style="color:var(--mut)">(10.1.3.1)</small></li>
+          <li>Сообщающиеся сосуды · Закон Паскаля · Опыт Торричелли <small style="color:var(--mut)">(10.1.3.2, 10.1.3.3)</small></li>
+          <li>Законы сохранения импульса и механической энергии <small style="color:var(--mut)">(10.1.4.1)</small></li>
+          <li>Кинематика жидкости · Течения жидкостей и газов <small style="color:var(--mut)">(10.1.5.1)</small></li>
+        </ul>
+        <div class="teacher">
+          <span class="t-label">Учитель физики</span>
+          <span class="t-name">Кунгозин Даулет Багдашұлы</span>
+        </div>
+      </div>
+      <form class="panel form-panel" id="formStart" autocomplete="off" novalidate>
+        <h2>Данные учащегося</h2>
+        <label class="field"><span>ФИ учащегося</span>
+          <input id="inpFio" type="text" placeholder="Введите ФИ" autocomplete="off">
+        </label>
+        <label class="field"><span>Класс</span>
+          <div class="sel"><select id="selKlass">
+            <option value="">— выберите класс —</option><option>10 Б</option><option>10 В</option>
+          </select></div>
+        </label>
+        <label class="field"><span>Вариант</span>
+          <div class="sel"><select id="selVar">
+            <option value="">— выберите вариант —</option><option value="1">Вариант 1</option><option value="2">Вариант 2</option>
+          </select></div>
+        </label>
+        <div class="mini-stats"><span>15 вопросов</span><span>90 с на вопрос</span><span>Без возврата назад</span></div>
+        <button type="submit" class="btn wide">Продолжить →</button>
+      </form>
+    </div>
+    <p class="foot">⚛ Физика · 10 класс · 2026</p>
+  </section>
+
+  <!-- ЭКРАН 2: ДИСКЛЕЙМЕР -->
+  <section id="scr-disc" class="screen">
+    <div class="panel disc">
+      <h2>⚠ Дисклеймер и правила</h2>
+      <p class="who" id="discWho"></p>
+      <ul>
+        <li>Тест состоит из <b>15 вопросов</b>: теория, рисунки и графики, формулы и расчётные задачи. За каждый верный ответ — <b>1 балл</b>, максимум <b>15 баллов</b>.</li>
+        <li>На каждый вопрос — <b>1,5 минуты (90 секунд)</b>. Когда время истекает, тест автоматически переходит к следующему вопросу.</li>
+        <li>Вернуться к предыдущему вопросу <b>нельзя</b>. Правильные и неправильные ответы во время теста не показываются.</li>
+        <li><b>Не сворачивайте вкладку</b> и не открывайте другие окна или приложения: первое нарушение — предупреждение, второе — тест завершится автоматически.</li>
+        <li>Каждый запуск теста засчитывается как <b>попытка</b>, даже если тест был завершён досрочно.</li>
+        <li>Ответы на расчётные задачи вводите <b>числом без единиц измерения</b> (можно использовать запятую). Во всех задачах принимайте <b>g = 10 Н/кг</b>.</li>
+        <li>Результат автоматически отправляется учителю в Google Sheets. Соблюдайте <b>академическую честность</b>!</li>
+      </ul>
+      <label class="agree"><input type="checkbox" id="chkAgree"><span>Я ознакомлен(а) с правилами и обязуюсь их соблюдать</span></label>
+      <p class="attempt-note">Этот запуск будет засчитан как попытка <b id="attemptNum">№1</b></p>
+      <button id="btnBegin" class="btn wide" disabled>Начать тест ⚡</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 3: ТЕСТ -->
+  <section id="scr-quiz" class="screen">
+    <div class="panel quiz">
+      <header class="q-head">
+        <div>
+          <div class="q-count" id="qCount">Вопрос 1 / 15</div>
+          <div class="q-topic" id="qTopic"></div>
+        </div>
+        <svg class="tring" id="trSvg" viewBox="0 0 64 64" aria-hidden="true">
+          <circle class="tr-bg" cx="32" cy="32" r="26"></circle>
+          <circle class="tr-fg" id="trFg" cx="32" cy="32" r="26" transform="rotate(-90 32 32)"></circle>
+          <text id="trTx" x="32" y="37">1:30</text>
+        </svg>
+      </header>
+      <div class="prog" id="prog"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="fig" id="qFig"></div>
+      <div id="qArea"></div>
+      <button id="btnNext" class="btn wide btn-next" disabled>Далее →</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 4: РЕЗУЛЬТАТ -->
+  <section id="scr-res" class="screen">
+    <div class="panel res">
+      <h2>Результат теста</h2>
+      <div class="score-badge" id="scoreBadge"><b id="resScore">0</b><span>ИЗ 15 БАЛЛОВ</span></div>
+      <div class="res-status" id="resStatus"></div>
+      <div class="res-rate" id="resRate"></div>
+      <ul class="res-rows">
+        <li><span>Учащийся</span><b id="resFio"></b></li>
+        <li><span>Класс</span><b id="resKlass"></b></li>
+        <li><span>Вариант</span><b id="resVar"></b></li>
+        <li><span>Использовано попыток</span><b id="resAtt"></b></li>
+        <li><span>Время прохождения</span><b id="resDur"></b></li>
+      </ul>
+      <div class="send" id="sendStat"></div>
+      <button id="btnHome" class="btn wide">На главную</button>
+    </div>
+  </section>
+</main>
+
+<!-- ПРЕДУПРЕЖДЕНИЕ АНТИЧИТА -->
+<div class="warn" id="warn">
+  <div class="warn-card">
+    <div class="warn-ico">⚠</div>
+    <h3>Внимание! Зафиксировано переключение</h3>
+    <p id="warnReason"></p>
+    <p class="warn-sub">При повторном нарушении тест будет завершён автоматически, попытка будет засчитана.</p>
+    <button class="btn btn-warn" id="btnWarnOk">Понятно</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ================================================================
+   СО · Физика 10 класс · «Статика и гидростатика. Законы
+   сохранения. Гидродинамика» · Учитель: Кунгозин Даулет Багдашұлы
+   ================================================================ */
+
+/* >>> ВСТАВЬТЕ СЮДА URL веб-приложения Apps Script <<< */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR-AAuzhZtJa1oNoIkBJDPYsdXj08lolaFbFPDmo1_-Vo3R5mwak4BN5vmshvK9m4Row/exec';
+
+const QTIME = 90, MAXB = 15;
+
+/* ---------------- SVG-помощники (сетка-клетка + оси) ---------------- */
+let _uid = 0;
+const gid = p => p + (++_uid);
+const r1 = v => Math.round(v * 10) / 10;
+
+function svgHead(w, h){
+  const pid = gid('gp'), mid = gid('ar');
+  const head = `<svg class="qsvg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img">
+    <defs>
+      <pattern id="${pid}" width="10" height="10" patternUnits="userSpaceOnUse">
+        <path d="M10 0H0V10" fill="none" stroke="rgba(96,160,255,.14)" stroke-width="1"/>
+      </pattern>
+      <marker id="${mid}" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto">
+        <path d="M0,0 L7,3 L0,6 Z" fill="#38e1ff"/>
+      </marker>
+    </defs>
+    <rect width="${w}" height="${h}" fill="#0a1122" rx="10"/>
+    <rect width="${w}" height="${h}" fill="url(#${pid})" rx="10"/>`;
+  return { head, mid };
+}
+function yAxis(x, yB, yT, step, per, label){
+  let s = `<line x1="${x}" y1="${yB}" x2="${x}" y2="${yT}" stroke="#7e96c8" stroke-width="1.4"/>
+  <path d="M${x-4},${yT+8} L${x},${yT} L${x+4},${yT+8}" fill="none" stroke="#7e96c8" stroke-width="1.4"/>`;
+  for(let y = yB, v = 0; y > yT; y -= step, v += per){
+    s += `<line x1="${x-4}" y1="${y}" x2="${x}" y2="${y}" stroke="#7e96c8" stroke-width="1.2"/>
+    <text x="${x-7}" y="${y+3.5}" text-anchor="end" class="tx">${v}</text>`;
+  }
+  s += `<text x="${x-4}" y="${yT-6}" class="ax">${label}</text>`;
+  return s;
+}
+function xAxis(y, xL, xR, step, per, label){
+  let s = `<line x1="${xL}" y1="${y}" x2="${xR}" y2="${y}" stroke="#7e96c8" stroke-width="1.4"/>
+  <path d="M${xR-8},${y-4} L${xR},${y} L${xR-8},${y+4}" fill="none" stroke="#7e96c8" stroke-width="1.4"/>`;
+  for(let x = xL, v = 0; x < xR - 4; x += step, v += per){
+    s += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y+4}" stroke="#7e96c8" stroke-width="1.2"/>
+    <text x="${x}" y="${y+14}" text-anchor="middle" class="tx">${v}</text>`;
+  }
+  s += `<text x="${xR-2}" y="${y-8}" text-anchor="end" class="ax">${label}</text>`;
+  return s;
+}
+/* Сообщающиеся сосуды: уровни слева/справа */
+function svgUVessels(lL, lR){
+  const { head } = svgHead(300, 200); let s = head;
+  s += yAxis(36, 184, 16, 40, 4, 'h, см');
+  s += xAxis(196, 46, 292, 80, 8, 'x, см');
+  s += `<path d="M71,${lL} H109 V150 H191 V${lR} H229 V178 H71 Z" fill="rgba(56,209,255,.30)"/>`;
+  s += `<path d="M71,${lL} H109 M191,${lR} H229" stroke="#38e1ff" stroke-width="2.5" stroke-linecap="round"/>`;
+  s += `<path d="M70,55 V180 H230 V55" fill="none" stroke="#6fd9ff" stroke-width="3" stroke-linecap="round"/>`;
+  s += `<path d="M110,55 V150 H190 V55" fill="none" stroke="#6fd9ff" stroke-width="3" stroke-linecap="round"/>`;
+  return s + '</svg>';
+}
+/* Пластина-уголок с точками (центр масс) */
+function svgPlate(){
+  const { head } = svgHead(300, 200); let s = head;
+  s += yAxis(30, 180, 16, 40, 2, 'y, см');
+  s += xAxis(180, 30, 292, 40, 2, 'x, см');
+  s += `<path d="M60,40 H120 V120 H180 V160 H60 Z" fill="rgba(255,193,77,.25)" stroke="#ffc14d" stroke-width="2.5" stroke-linejoin="round"/>`;
+  [[90,80,'1'],[105,110,'2'],[120,140,'3'],[155,130,'4']].forEach(p=>{
+    s += `<circle cx="${p[0]}" cy="${p[1]}" r="3.4" fill="#ff3fd4"/><text x="${p[0]+7}" y="${p[1]-6}" class="px">${p[2]}</text>`;
+  });
+  return s + '</svg>';
+}
+/* Графики v(S) */
+function svgGraph(kind){
+  const { head } = svgHead(220, 170); let s = head;
+  s += yAxis(40, 140, 14, 30, 2, 'v, м/с');
+  s += xAxis(140, 40, 210, 40, 2, 'S, м²');
+  let curve = '';
+  if(kind === 'hyper'){
+    const pts = [];
+    for(let S = .65; S <= 8.01; S += .15){
+      const x = 40 + S * 20, y = 140 - (8 / S) * 15;
+      if(y >= 16) pts.push(`${r1(x)},${r1(y)}`);
+    }
+    curve = 'M' + pts.join(' L');
+  } else if(kind === 'linUp'){ curve = 'M40,140 L204,26'; }
+  else if(kind === 'const'){ curve = 'M40,68 L204,68'; }
+  else { curve = 'M40,26 L204,140'; }
+  s += `<path d="${curve}" fill="none" stroke="rgba(56,225,255,.28)" stroke-width="6" stroke-linecap="round"/>`;
+  s += `<path d="${curve}" fill="none" stroke="#38e1ff" stroke-width="2.4" stroke-linecap="round"/>`;
+  return s + '</svg>';
+}
+/* Виды равновесия шарика */
+function svgEq(kind){
+  const { head } = svgHead(300, 200); let s = head;
+  s += yAxis(30, 186, 16, 40, 4, 'h, см');
+  const surf = 'fill="none" stroke="#6fd9ff" stroke-width="3" stroke-linecap="round"';
+  const ball = (x, y, rr = 14) =>
+    `<circle cx="${x}" cy="${y}" r="${rr}" fill="rgba(255,193,77,.92)" stroke="#ffe3a3" stroke-width="1.5"/>
+     <circle cx="${r1(x-rr*.3)}" cy="${r1(y-rr*.35)}" r="${r1(rr*.22)}" fill="rgba(255,255,255,.65)"/>`;
+  if(kind === 'stable'){ s += `<path d="M60,70 Q150,200 240,70" ${surf}/>` + ball(150, 120); }
+  if(kind === 'unstable'){ s += `<path d="M60,180 Q150,30 240,180" ${surf}/>` + ball(150, 91); }
+  if(kind === 'neutral'){ s += `<path d="M50,150 H250" ${surf}/>` + ball(150, 136); }
+  if(kind === 'pendulum'){
+    s += `<line x1="110" y1="40" x2="190" y2="40" stroke="#6fd9ff" stroke-width="3"/>`;
+    for(let x = 118; x <= 186; x += 14) s += `<line x1="${x}" y1="40" x2="${x-10}" y2="26" stroke="#6fd9ff" stroke-width="1.6"/>`;
+    s += `<line x1="150" y1="42" x2="150" y2="117" stroke="#9fb4de" stroke-width="1.6"/><circle cx="150" cy="42" r="3.5" fill="#9fb4de"/>` + ball(150, 130, 15);
+  }
+  return s + '</svg>';
+}
+/* Силы давления на шарик в жидкости */
+function svgPress(kind){
+  const { head, mid } = svgHead(300, 200); let s = head;
+  s += yAxis(30, 186, 16, 40, 2, 'h, м');
+  const cx = 165, cy = 110;
+  s += `<circle cx="${cx}" cy="${cy}" r="34" fill="rgba(255,193,77,.30)" stroke="#ffc14d" stroke-width="2.5"/>`;
+  const ar = (x1, y1, x2, y2) =>
+    `<line x1="${r1(x1)}" y1="${r1(y1)}" x2="${r1(x2)}" y2="${r1(y2)}" stroke="#38e1ff" stroke-width="2.4" marker-end="url(#${mid})"/>`;
+  if(kind === 'all'){
+    for(let i = 0; i < 8; i++){
+      const a = i * Math.PI / 4;
+      s += ar(cx + 82 * Math.cos(a), cy + 82 * Math.sin(a), cx + 46 * Math.cos(a), cy + 46 * Math.sin(a));
+    }
+  }
+  if(kind === 'down') s += ar(120, 34, 120, 68) + ar(165, 26, 165, 66) + ar(210, 34, 210, 68);
+  if(kind === 'up') s += ar(165, 190, 165, 152);
+  if(kind === 'side') s += ar(46, 84, 118, 93) + ar(40, 110, 122, 110) + ar(46, 136, 118, 127);
+  return s + '</svg>';
+}
+/* Труба переменного сечения */
+function svgPipe(){
+  const { head, mid } = svgHead(300, 200); let s = head;
+  s += xAxis(196, 24, 292, 45, 3, 'x, см');
+  s += `<path d="M20,70 H90 L120,90 H180 L210,78 H280 V142 H210 L180,130 H120 L90,150 H20 Z" fill="rgba(56,209,255,.14)"/>`;
+  s += `<path d="M20,70 H90 L120,90 H180 L210,78 H280" fill="none" stroke="#6fd9ff" stroke-width="3" stroke-linecap="round"/>`;
+  s += `<path d="M20,150 H90 L120,130 H180 L210,142 H280" fill="none" stroke="#6fd9ff" stroke-width="3" stroke-linecap="round"/>`;
+  const f = x => `<line x1="${x}" y1="110" x2="${x+22}" y2="110" stroke="#38e1ff" stroke-width="2.4" marker-end="url(#${mid})"/>`;
+  s += f(30) + f(139) + f(238);
+  const m = (x, y1, y2, n) =>
+    `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="#ff3fd4" stroke-width="1.6" stroke-dasharray="5 4"/>
+     <text x="${x}" y="${y1-8}" text-anchor="middle" class="px">${n}</text>`;
+  s += m(55, 62, 158, '1') + m(150, 82, 138, '2') + m(245, 70, 150, '3');
+  return s + '</svg>';
+}
+
+/* ---------------- БАНК ВОПРОСОВ ---------------- */
+const BANK = {
+1: [
+ {t:'choice', topic:'10.1.3.1 · Виды равновесия', q:'Шарик подвешен на нити и покоится в нижнем положении. Какой это вид равновесия?',
+  opts:['Устойчивое','Неустойчивое','Безразличное','Тело не находится в равновесии'], a:0},
+ {t:'choice', topic:'10.1.3.2 · Закон Паскаля', q:'Согласно закону Паскаля давление, оказываемое на жидкость или газ, …',
+  opts:['передаётся по всем направлениям одинаково','передаётся только вниз, по направлению силы тяжести','передаётся только вверх и в стороны','не передаётся к стенкам сосуда'], a:0},
+ {t:'choice', topic:'10.1.4.1 · Законы сохранения', q:'Закон сохранения импульса выполняется …',
+  opts:['в любой системе тел','только при абсолютно упругом ударе','в замкнутой системе тел','только для тел одинаковой массы'], a:2},
+ {t:'choice', topic:'10.1.3.2 · Сообщающиеся сосуды', q:'В сообщающиеся сосуды налита однородная жидкость, которая находится в покое. На каком рисунке уровни жидкости изображены правильно?',
+  opts:[svgUVessels(90,90), svgUVessels(70,115), svgUVessels(115,70), svgUVessels(80,105)], a:0, svgOpts:true},
+ {t:'choice', topic:'10.1.3.1 · Центр масс', q:'На рисунке показана однородная пластина в форме уголка и четыре отмеченные точки. В какой точке находится центр масс пластины?',
+  svg:svgPlate(), opts:['Точка 1','Точка 2','Точка 3','Точка 4'], a:1},
+ {t:'choice', topic:'10.1.5.1 · Течение жидкости', q:'По трубе течёт несжимаемая жидкость с постоянным расходом. Какой график правильно показывает зависимость скорости жидкости от площади поперечного сечения трубы?',
+  opts:[svgGraph('linUp'), svgGraph('hyper'), svgGraph('const'), svgGraph('linDown')], a:1, svgOpts:true},
+ {t:'choice', topic:'10.1.3.3 · Гидростатическое давление', q:'По какой формуле рассчитывается гидростатическое давление на глубине h?',
+  opts:['p = ρgh','p = ρgV','p = gh/ρ','p = ρgh²'], a:0, formula:true},
+ {t:'choice', topic:'10.1.4.1 · Импульс тела', q:'Импульс тела определяется формулой:',
+  opts:['p = mv²/2','p = mgh','p = mv','p = ma'], a:2, formula:true},
+ {t:'choice', topic:'10.1.5.1 · Уравнение неразрывности', q:'Уравнение неразрывности струи (постоянство расхода) записывается так:',
+  opts:['S₁v₁ = S₂v₂','S₁v₂ = S₂v₁','S₁/S₂ = v₁/v₂','S₁ + v₁ = S₂ + v₂'], a:0, formula:true},
+ {t:'calc', topic:'10.1.3.1 · Центр масс', q:'Два шарика массами 2 кг и 6 кг закреплены на концах лёгкого стержня длиной 8 м. На каком расстоянии от шарика массой 2 кг находится центр масс системы? Ответ в метрах.', a:6},
+ {t:'calc', topic:'10.1.3.1 · Равновесие рычага', q:'Рычаг находится в равновесии. К левому плечу длиной 0,15 м приложена сила 20 Н. Какова сила, действующая на правое плечо длиной 0,5 м? Ответ в ньютонах.', a:6},
+ {t:'calc', topic:'10.1.3.2 · Гидравлический пресс', q:'В гидравлическом прессе площадь малого поршня 0,01 м², а большого — 0,5 м². На малый поршень действует сила 200 Н. Какова сила, действующая на большой поршень? Ответ в ньютонах.', a:10000},
+ {t:'calc', topic:'10.1.3.3 · Гидростатическое давление', q:'Определите давление воды на глубине 2 м. Плотность воды 1000 кг/м³, g = 10 Н/кг. Ответ в паскалях.', a:20000},
+ {t:'calc', topic:'10.1.4.1 · Сохранение импульса', q:'Тележка массой 3 кг движется со скоростью 4 м/с и сцепляется с неподвижной тележкой массой 1 кг. Какова скорость тележек после сцепки? Ответ в м/с.', a:3},
+ {t:'calc', topic:'10.1.4.1 · Сохранение энергии', q:'Мяч массой 0,5 кг падает с высоты 4 м без начальной скорости. Сопротивление воздуха не учитывать, g = 10 Н/кг. Какова кинетическая энергия мяча у поверхности земли? Ответ в джоулях.', a:20}
+],
+2: [
+ {t:'choice', topic:'10.1.3.1 · Виды равновесия', q:'Карандаш лежит на горизонтальном столе. При перемещении по столу его центр масс остаётся на той же высоте. Какой это вид равновесия?',
+  opts:['Устойчивое','Неустойчивое','Безразличное','Тело не находится в равновесии'], a:2},
+ {t:'choice', topic:'10.1.3.3 · Опыт Торричелли', q:'В опыте Торричелли атмосферное давление уравновешивается столбом ртути в трубке. Чему равна высота этого столба при нормальном атмосферном давлении?',
+  opts:['760 мм','760 см','10 м','100 мм'], a:0},
+ {t:'choice', topic:'10.1.4.1 · Законы сохранения', q:'Закон сохранения механической энергии выполняется в системе, в которой …',
+  opts:['действуют только консервативные силы','обязательно действует сила трения','тела движутся только с ускорением','все тела обязательно покоятся'], a:0},
+ {t:'choice', topic:'10.1.3.1 · Виды равновесия', q:'На каком рисунке шарик находится в состоянии неустойчивого равновесия?',
+  opts:[svgEq('stable'), svgEq('unstable'), svgEq('neutral'), svgEq('pendulum')], a:1, svgOpts:true},
+ {t:'choice', topic:'10.1.3.3 · Гидростатическое давление', q:'На каком рисунке правильно показаны силы давления, действующие со стороны жидкости на погружённый в неё шарик?',
+  opts:[svgPress('all'), svgPress('down'), svgPress('up'), svgPress('side')], a:0, svgOpts:true},
+ {t:'choice', topic:'10.1.5.1 · Течение жидкости', q:'По трубе с разным поперечным сечением течёт несжимаемая жидкость (см. рисунок). В каком сечении скорость течения жидкости минимальна?',
+  svg:svgPipe(), opts:['В сечении 1','В сечении 2','В сечении 3','Скорость одинакова во всех сечениях'], a:0},
+ {t:'choice', topic:'10.1.3.2 · Давление', q:'Давление твёрдого тела на поверхность определяется формулой:',
+  opts:['p = F/S','p = F·S','p = S/F','p = mg·S'], a:0, formula:true},
+ {t:'choice', topic:'10.1.4.1 · Кинетическая энергия', q:'Кинетическая энергия тела определяется формулой:',
+  opts:['E = mv','E = mv²/2','E = mgh','E = mv²'], a:1, formula:true},
+ {t:'choice', topic:'10.1.4.1 · Потенциальная энергия', q:'Потенциальная энергия тела, поднятого над землёй на высоту h, определяется формулой:',
+  opts:['E = mgh','E = mv²/2','E = mh/g','E = mg/h'], a:0, formula:true},
+ {t:'calc', topic:'10.1.3.1 · Центр масс', q:'Два шарика массами 3 кг и 5 кг закреплены на концах лёгкого стержня длиной 4 м. На каком расстоянии от шарика массой 3 кг находится центр масс системы? Ответ в метрах.', a:2.5},
+ {t:'calc', topic:'10.1.3.1 · Равновесие рычага', q:'Рычаг находится в равновесии: сила 30 Н действует на плечо 0,2 м. Какова сила, действующая на плечо 0,6 м? Ответ в ньютонах.', a:10},
+ {t:'calc', topic:'10.1.3.2 · Гидравлический пресс', q:'Площадь малого поршня гидравлического пресса 0,02 м², а большого — 0,4 м². На малый поршень действует сила 400 Н. Какова сила, действующая на большой поршень? Ответ в ньютонах.', a:8000},
+ {t:'calc', topic:'10.1.3.3 · Гидростатическое давление', q:'Определите давление керосина на глубине 2,5 м. Плотность керосина 800 кг/м³, g = 10 Н/кг. Ответ в паскалях.', a:20000},
+ {t:'calc', topic:'10.1.4.1 · Сохранение импульса', q:'Тележка массой 2 кг движется со скоростью 6 м/с навстречу тележке массой 4 кг, которая движется со скоростью 1,5 м/с. После сцепки тележки движутся вместе. Какова их скорость? Ответ в м/с.', a:1},
+ {t:'calc', topic:'10.1.4.1 · Сохранение энергии', q:'Тело свободно падает с высоты 5 м без начальной скорости. Сопротивление воздуха не учитывать, g = 10 Н/кг. Какова скорость тела у поверхности земли? Ответ в м/с.', a:10}
+]
+};
+
+/* ---------------- СОСТОЯНИЕ И ХРАНИЛИЩЕ ---------------- */
+const S = { variant:null, fio:'', klass:'', idx:0, answers:[], active:false, done:false,
+            warned:false, startedAt:0, timer:null, tLeft:QTIME, attempt:0 };
+let locked = false;
+const mem = {};
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return mem[k] ?? null; } };
+const lsSet = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){ mem[k] = v; } };
+const attemptsKey = () => 'fiz10so::' + [S.fio.trim().toLowerCase(), S.klass, S.variant].join('|');
+const getAttempts = () => parseInt(lsGet(attemptsKey()) || '0', 10);
+const bumpAttempts = () => { const n = getAttempts() + 1; lsSet(attemptsKey(), String(n)); return n; };
+
+const $ = id => document.getElementById(id);
+const scr = { start:$('scr-start'), disc:$('scr-disc'), quiz:$('scr-quiz'), res:$('scr-res') };
+function show(name){
+  Object.values(scr).forEach(s => s.classList.remove('active'));
+  scr[name].classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+let toastT = null;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------------- СТАРТ И ДИСКЛЕЙМЕР ---------------- */
+$('formStart').addEventListener('submit', e => {
+  e.preventDefault();
+  const fio = $('inpFio').value.trim().replace(/\s+/g, ' ');
+  const klass = $('selKlass').value, variant = $('selVar').value;
+  if(fio.length < 4){ toast('Введите фамилию и имя полностью'); $('inpFio').focus(); return; }
+  if(!klass){ toast('Выберите класс'); return; }
+  if(!variant){ toast('Выберите вариант'); return; }
+  S.fio = fio; S.klass = klass; S.variant = variant;
+  $('discWho').textContent = `${S.fio} · ${S.klass} · Вариант ${S.variant}`;
+  $('attemptNum').textContent = '№' + (getAttempts() + 1);
+  show('disc');
+});
+$('chkAgree').addEventListener('change', e => { $('btnBegin').disabled = !e.target.checked; });
+$('btnBegin').addEventListener('click', () => {
+  S.attempt = bumpAttempts();
+  S.idx = 0; S.answers = []; S.warned = false; S.done = false;
+  S.active = true; S.startedAt = Date.now();
+  $('prog').innerHTML = Array.from({length:MAXB}, () => '<i></i>').join('');
+  show('quiz');
+  renderQuestion();
+});
+
+/* ---------------- ОТРИСОВКА ВОПРОСА ---------------- */
+function renderQuestion(){
+  locked = false;
+  const q = BANK[S.variant][S.idx];
+  $('qCount').textContent = `Вопрос ${S.idx + 1} / ${MAXB}`;
+  $('qTopic').textContent = q.topic;
+  $('qText').textContent = q.q;
+  $('qFig').innerHTML = (!q.svgOpts && q.svg) ? q.svg : '';
+  $('btnNext').textContent = (S.idx === MAXB - 1) ? 'Завершить ✓' : 'Далее →';
+  $('btnNext').disabled = true;
+  $('btnNext').classList.remove('ready');
+  paintProg();
+  const area = $('qArea'); area.innerHTML = '';
+  if(q.t === 'choice'){
+    const wrap = document.createElement('div');
+    wrap.className = 'opts' + (q.svgOpts ? ' opts-svg' : '');
+    q.opts.forEach((o, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt' + (q.svgOpts ? ' opt-wrap' : '') + (q.formula ? ' formula' : '');
+      b.innerHTML = `<span class="key">${'ABCD'[i]}</span><span class="txt">${o}</span>`;
+      b.addEventListener('click', () => {
+        wrap.querySelectorAll('.opt').forEach(c => c.classList.remove('sel'));
+        b.classList.add('sel');
+        S.answers[S.idx] = i;
+        $('btnNext').disabled = false;
+        $('btnNext').classList.add('ready');
+      });
+      wrap.appendChild(b);
+    });
+    area.appendChild(wrap);
+  } else {
+    const zone = document.createElement('div');
+    zone.className = 'calc-zone';
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.inputMode = 'decimal'; inp.autocomplete = 'off';
+    inp.placeholder = '?';
+    const note = document.createElement('div');
+    note.className = 'calc-note';
+    note.textContent = 'Введите ответ числом без единиц измерения (дробную часть — через запятую).';
+    inp.addEventListener('input', () => {
+      const raw = inp.value.replace(',', '.').replace(/\s/g, '');
+      S.answers[S.idx] = raw;
+      const ok = raw !== '' && isFinite(parseFloat(raw));
+      inp.classList.toggle('invalid', raw !== '' && !ok);
+      $('btnNext').disabled = !ok;
+      $('btnNext').classList.toggle('ready', ok);
+    });
+    inp.addEventListener('keydown', e => { if(e.key === 'Enter' && !$('btnNext').disabled) goNext(); });
+    zone.appendChild(inp); zone.appendChild(note); area.appendChild(zone);
+    setTimeout(() => inp.focus(), 250);
+  }
+  startTimer();
+}
+function paintProg(){
+  [...$('prog').children].forEach((el, i) => {
+    el.className = i < S.idx ? 'done' : (i === S.idx ? 'cur' : '');
+  });
+}
+
+/* ---------------- ТАЙМЕР ---------------- */
+function startTimer(){
+  clearInterval(S.timer);
+  S.tLeft = QTIME;
+  updateTimer();
+  S.timer = setInterval(() => {
+    S.tLeft--;
+    updateTimer();
+    if(S.tLeft <= 0){ clearInterval(S.timer); timeUp(); }
+  }, 1000);
+}
+function updateTimer(){
+  const m = Math.floor(S.tLeft / 60), s = S.tLeft % 60;
+  $('trTx').textContent = `${m}:${String(s).padStart(2, '0')}`;
+  $('trFg').style.strokeDashoffset = (163.36 * (1 - S.tLeft / QTIME)).toFixed(1);
+  $('trSvg').classList.toggle('low', S.tLeft <= 20);
+}
+function timeUp(){
+  if(locked || !S.active) return;
+  locked = true;
+  toast('⏱ Время вышло — переходим дальше');
+  setTimeout(() => { if(S.active) advance(); }, 800);
+}
+
+/* ---------------- ПЕРЕХОД И ЗАВЕРШЕНИЕ ---------------- */
+$('btnNext').addEventListener('click', goNext);
+function goNext(){
+  if($('btnNext').disabled || locked || !S.active) return;
+  locked = true;
+  clearInterval(S.timer);
+  advance();
+}
+function advance(){
+  if(S.idx >= MAXB - 1){ finish(false); return; }
+  S.idx++;
+  renderQuestion();
+}
+function scoreFor(i){
+  const q = BANK[S.variant][i], a = S.answers[i];
+  if(q.t === 'choice') return (a === q.a) ? 1 : 0;
+  if(a === undefined || a === '') return 0;
+  const v = parseFloat(String(a).replace(',', '.').trim());
+  return (isFinite(v) && Math.abs(v - q.a) < 1e-6) ? 1 : 0;
+}
+const calcScore = () => { let s = 0; for(let i = 0; i < MAXB; i++) s += scoreFor(i); return s; };
+
+function finish(violation = false, reason = ''){
+  if(S.done) return;
+  S.done = true; S.active = false;
+  clearInterval(S.timer);
+  const score = calcScore();
+  const dur = Math.round((Date.now() - S.startedAt) / 1000);
+  showResult(score, violation, reason, dur);
+  sendResults(score, violation, dur);
+}
+function showResult(score, violation, reason, dur){
+  $('resScore').textContent = score;
+  $('scoreBadge').classList.toggle('bad', violation);
+  const st = $('resStatus');
+  if(violation){
+    st.textContent = `⛔ Тест прерван системой античитинга (${reason}). Засчитана попытка №${S.attempt}.`;
+    st.classList.add('viol');
+  } else {
+    st.textContent = '✓ Тест завершён';
+    st.classList.remove('viol');
+  }
+  const rate = score >= 13 ? '🏆 Отличный результат!' : score >= 10 ? '👍 Хороший результат'
+             : score >= 6 ? '📘 Удовлетворительно' : '📚 Раздел нужно повторить';
+  $('resRate').textContent = rate;
+  $('resFio').textContent = S.fio;
+  $('resKlass').textContent = S.klass;
+  $('resVar').textContent = 'Вариант ' + S.variant;
+  $('resAtt').textContent = S.attempt;
+  $('resDur').textContent = `${Math.floor(dur / 60)} мин ${dur % 60} с`;
+  show('res');
+}
+$('btnHome').addEventListener('click', () => {
+  $('chkAgree').checked = false;
+  $('btnBegin').disabled = true;
+  show('start');
+});
+
+/* ---------------- ОТПРАВКА В GOOGLE SHEETS ---------------- */
+function sendResults(score, violation, dur){
+  const el = $('sendStat');
+  if(!SCRIPT_URL || SCRIPT_URL.includes('ВСТАВЬТЕ')){
+    el.textContent = 'ℹ Отправка отключена: укажите SCRIPT_URL в файле index.html';
+    el.className = 'send err';
+    return;
+  }
+  const fd = new FormData();
+  fd.append('fio', S.fio); fd.append('klass', S.klass); fd.append('variant', S.variant);
+  fd.append('score', score); fd.append('attempt', S.attempt);
+  fd.append('violation', violation ? 'да' : 'нет');
+  fd.append('duration', dur); fd.append('ts', new Date().toLocaleString('ru-RU'));
+  let ok = false;
+  try{ ok = navigator.sendBeacon(SCRIPT_URL, fd); }catch(e){}
+  if(ok){
+    el.textContent = '📤 Результат отправлен в Google Sheets';
+    el.className = 'send ok';
+  } else {
+    el.textContent = '⏳ Отправка результата…';
+    el.className = 'send';
+    fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', body: fd })
+      .then(() => { el.textContent = '📤 Результат отправлен в Google Sheets'; el.className = 'send ok'; })
+      .catch(() => { el.textContent = '⚠ Не удалось отправить результат (проверьте интернет)'; el.className = 'send err'; });
+  }
+}
+
+/* ---------------- АНТИЧИТ (адаптирован под iOS / Samsung) ----------------
+   1-е нарушение → предупреждение, 2-е → завершение теста.
+   Ложные срабатывания на клавиатуре iPhone исключены: событие blur
+   игнорируется, пока фокус находится в поле ввода (клавиатура открыта),
+   а также пока страница не скрыта (за клавиатуру отвечает только фокус). */
+function violation(reason){
+  if(!S.active) return;
+  if(!S.warned){
+    S.warned = true;
+    $('warnReason').textContent = reason + '.';
+    $('warn').classList.add('show');
+  } else {
+    finish(true, reason);
+  }
+}
+document.addEventListener('visibilitychange', () => {
+  /* Скрытие страницы: сворачивание вкладки, переключение приложений,
+     выезд второго окна снизу на Samsung и т.п. */
+  if(document.hidden) violation('Вкладка была свёрнута или открыто другое окно');
+});
+window.addEventListener('blur', () => {
+  /* Отложенная проверка: на смартфонах (в т.ч. iPhone) blur возникает
+     при появлении клавиатуры — это НЕ считается нарушением. */
+  setTimeout(() => {
+    if(!S.active || document.hidden) return;
+    const ae = document.activeElement;
+    if(ae && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT' || ae.tagName === 'TEXTAREA')) return;
+    violation('Окно браузера потеряло фокус');
+  }, 400);
+});
+document.addEventListener('pagehide', () => {
+  /* Полный уход со страницы во время теста — фиксируем результат как прерванный */
+  if(S.active && !S.done){
+    S.done = true; S.active = false;
+    clearInterval(S.timer);
+    try{ sendResults(calcScore(), true, 0); }catch(e){}
+  }
+});
+
+$('btnWarnOk').addEventListener('click', () => { $('warn').classList.remove('show'); });
+
+</script>
+</body>
+</html>
